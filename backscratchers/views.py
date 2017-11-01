@@ -29,6 +29,7 @@ def backscratcher_list(request):
         return JsonResponse(serializer.errors, status=400)
 
 
+@csrf_exempt
 def backscratcher_detail(request, pk):
     """
     Retrieve, update, or delete a backscratcher.
