@@ -89,7 +89,10 @@ celerybeat-schedule
 .venv
 venv/
 ENV/
+
+# Heroku
 staticfiles
+local.py
 
 # Spyder project settings
 .spyderproject
