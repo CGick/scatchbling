@@ -5,11 +5,13 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
+from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from backscratchers.models import BackScratcher
 from backscratchers.serializers import BackScratcherSerializer
 
 
+@api_view(["GET", "POST"])
 @csrf_exempt
 def backscratcher_list(request):
     """
@@ -29,6 +31,7 @@ def backscratcher_list(request):
         return JsonResponse(serializer.errors, status=400)
 
 
+@api_view(["GET", "PUT", "DELETE"])
 @csrf_exempt
 def backscratcher_detail(request, pk):
     """
