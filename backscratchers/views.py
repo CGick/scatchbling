@@ -1,27 +1,24 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from backscratchers.models import BackScratcher
 from backscratchers.serializers import BackScratcherSerializer
+from django.http import Http404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 
-@api_view(["GET", "POST"])
-@csrf_exempt
-def backscratcher_list(request, format=None):
+class BackscratcherList(APIView):
     """
     List all backscratchers, or create a new backscratcher.
     """
-    if request.method == "GET":
+    def get(self, request, format=None):
         backscratchers = BackScratcher.objects.all()
         serializer = BackScratcherSerializer(backscratchers, many=True)
         return Response(serializer.data)
 
-    elif request.method == "POST":
+    def post(self, request, format=None):
         serializer = BackScratcherSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -35,24 +32,25 @@ def backscratcher_list(request, format=None):
         )
 
 
-@api_view(["GET", "PUT", "DELETE"])
-@csrf_exempt
-def backscratcher_detail(request, pk, format=None):
+class BackscratcherDetail(APIView):
     """
     Retrieve, update, or delete a backscratcher.
     """
-    try:
-        backscatcher = BackScratcher.objects.get(pk=pk)
-    except BackScratcher.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    def get_object(self, pk):
+        try:
+            return BackScratcher.objects.get(pk=pk)
+        except BackScratcher.DoesNotExist:
+            raise Http404
 
-    if request.method == "GET":
-        serializer = BackScratcherSerializer(backscatcher)
+    def get(self, request, pk, format=None):
+        backscratcher = self.get_object(pk)
+        serializer = BackScratcherSerializer(backscratcher)
         return Response(serializer.data)
 
-    elif request.method == "PUT":
+    def put(self, request, pk, format=None):
+        backscratcher = self.get_object(pk)
         serializer = BackScratcherSerializer(
-            backscatcher,
+            backscratcher,
             data=request.data
         )
         if serializer.is_valid():
@@ -63,6 +61,7 @@ def backscratcher_detail(request, pk, format=None):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    elif request.method == "DELETE":
-        backscatcher.delete()
+    def delete(self, request, pk, format=None):
+        backscratcher = self.get_object(pk)
+        backscratcher.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

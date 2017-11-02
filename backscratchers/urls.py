@@ -4,8 +4,8 @@ from backscratchers import views
 
 
 urlpatterns = [
-    url(r'^backscratchers/$', views.backscratcher_list),
-    url(r'^backscratchers/(?P<pk>[0-9]+)/$', views.backscratcher_detail),
+    url(r'^backscratchers/$', views.BackscratcherList.as_view()),
+    url(r'^backscratchers/(?P<pk>[0-9]+)/$', views.BackscratcherDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
